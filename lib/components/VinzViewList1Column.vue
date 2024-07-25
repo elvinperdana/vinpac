@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, toRaw, onMounted } from 'vue';
+import {ref, computed, onMounted, onUnmounted, toRaw} from 'vue';
 import { defineProps } from 'vue';
 
 // 👉 - Props
@@ -11,9 +11,14 @@ const props = defineProps({
 })
 
 const longestInColumn = ref(0)
+const widthViewport = ref(0)
+
+const updateWidthViewport = () => {
+  widthViewport.value = window.innerWidth
+}
 
 const dataList = computed(() => {
-  return (toRaw(props.list)).filter(data => data.option?.rulesShow === undefined || data.option?.rulesShow)
+  return toRaw(props.list).filter(data => data.option?.rulesShow === undefined || data.option?.rulesShow)
 })
 
 const listData = computed(() => {
@@ -38,15 +43,19 @@ const thousandFormatter = num => {
 }
 
 // 👉 - Data
-const { t, locale } = useI18n()
-
 onMounted(() => {
-  longestInColumn.value = ((toRaw(props.list)).filter(data => data.option?.rulesShow === undefined || data.option?.rulesShow)).reduce((maxLength, obj) => Math.max(maxLength, obj['title'] ? obj['title'].length : 0), 0)
+  widthViewport.value = window.innerWidth
+  longestInColumn.value = (toRaw(props.list).filter(data => data.option?.rulesShow === undefined || data.option?.rulesShow)).reduce((maxLength, obj) => Math.max(maxLength, obj['title'] ? obj['title'].length : 0), 0)
+  window.addEventListener('resize', updateWidthViewport);
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateWidthViewport);
 })
 </script>
 
 <template>
-  <VRow v-if="$vuetify.display.mdAndUp">
+  <VRow v-if="widthViewport > 960">
     <VCol
       cols="12"
       class="pb-0 pb-md-3"
@@ -55,7 +64,7 @@ onMounted(() => {
         <template v-for="data in listData">
           <tr v-if="data.option?.rulesShow === undefined || data.option?.rulesShow">
             <td :style="{ inlineSize: `${2+(0.5*longestInColumn)}rem` }">
-              {{ $t(`${data.title}`) }}
+              {{ data.title }}
             </td>
             <td>:</td>
             <td v-if="data.option?.chip">
@@ -80,11 +89,11 @@ onMounted(() => {
       cols="12"
       class="pb-0 pb-md-3"
     >
-      <VTable :class=" $vuetify.display.sm ? 'columnTableSM' : 'columnTableXS'">
+      <VTable :class="widthViewport > 600 && widthViewport < 960 ? 'columnTableSM' : 'columnTableXS'">
         <template v-for="data in listData">
           <tr v-if="data.option?.rulesShow === undefined || data.option?.rulesShow">
-            <td :style="$vuetify.display.sm ? { 'inline-size': `${1 + (0.5 * longestInColumn)}rem` } : { 'inline-size': `${0.5 + (0.5 * longestInColumn)}rem` }">
-              {{ $t(`${data.title}`) }}
+            <td :style="widthViewport > 600 && widthViewport < 960 ? { 'inline-size': `${1 + (0.5 * longestInColumn)}rem` } : { 'inline-size': `${0.5 + (0.5 * longestInColumn)}rem` }">
+              {{ data.title }}
             </td>
             <td>:</td>
             <td v-if="data.option?.chip">

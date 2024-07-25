@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, toRaw, onMounted } from 'vue';
+import {ref, computed, toRaw, onMounted, onUnmounted} from 'vue';
 import { defineProps } from 'vue';
 
 // 👉 - Props
@@ -13,6 +13,11 @@ const props = defineProps({
 const longestInFirstColumn = ref(0)
 const longestInSecondColumn = ref(0)
 const longestInAllColumn = ref(0)
+const widthViewport = ref(0)
+
+const updateWidthViewport = () => {
+  widthViewport.value = window.innerWidth
+}
 
 const dataList = computed(() => {
   return (toRaw(props.list)).filter(data => data.option?.rulesShow === undefined || data.option?.rulesShow)
@@ -22,7 +27,7 @@ const listFirstColumn = computed(() => {
   const data = dataList.value.slice(0, Math.ceil(dataList.value.length / 2))
 
   longestInFirstColumn.value = data.reduce((maxLength, obj) => Math.max(maxLength, obj['title'] ? obj['title'].length : 0), 0)
-  
+
   return data
 })
 
@@ -56,19 +61,22 @@ const thousandFormatter = num => {
 }
 
 // 👉 - Data
-const { t, locale } = useI18n()
-
 onMounted(() => {
+  widthViewport.value = window.innerWidth
   const dataMounted = (toRaw(props.list)).filter(data => data.option?.rulesShow === undefined || data.option?.rulesShow)
 
   longestInFirstColumn.value = dataMounted.slice(0, Math.ceil(dataMounted.length / 2)).reduce((maxLength, obj) => Math.max(maxLength, obj['title'] ? obj['title'].length : 0), 0)
   longestInSecondColumn.value = dataMounted.slice(Math.ceil(dataMounted.length / 2)).reduce((maxLength, obj) => Math.max(maxLength, obj['title'] ? obj['title'].length : 0), 0)
   longestInAllColumn.value = dataMounted.reduce((maxLength, obj) => Math.max(maxLength, obj['title'] ? obj['title'].length : 0), 0)
 })
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateWidthViewport);
+})
 </script>
 
 <template>
-  <VRow v-if="$vuetify.display.mdAndUp">
+  <VRow v-if="widthViewport > 960">
     <VCol
       cols="12"
       md="6"
@@ -131,10 +139,10 @@ onMounted(() => {
       cols="12"
       class="pb-0 pb-md-3"
     >
-      <VTable :class=" $vuetify.display.sm ? 'columnTableSM' : 'columnTableXS'">
+      <VTable :class="widthViewport > 600 && widthViewport < 960 ? 'columnTableSM' : 'columnTableXS'">
         <template v-for="data in listAll">
           <tr v-if="data.option?.rulesShow === undefined || data.option?.rulesShow">
-            <td :style="$vuetify.display.sm ? { 'inline-size': `${1 + (0.5 * longestInAllColumn)}rem` } : { 'inline-size': `${0.5 + (0.5 * longestInAllColumn)}rem` }">
+            <td :style="widthViewport > 600 && widthViewport < 960 ? { 'inline-size': `${1 + (0.5 * longestInAllColumn)}rem` } : { 'inline-size': `${0.5 + (0.5 * longestInAllColumn)}rem` }">
               {{ data.title }}
             </td>
             <td>:</td>
