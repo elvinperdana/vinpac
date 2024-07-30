@@ -1,8 +1,5 @@
-// Plugins
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
-
-// Utilities
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
@@ -32,7 +29,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'lib/main.js'),
-      name: '@vinz/vinpac',
+      name: '@elvinperdana_vinz/vinpac',
       fileName: 'vinpac',
     },
     rollupOptions: {
