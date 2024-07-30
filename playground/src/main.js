@@ -14,8 +14,8 @@ import { createApp } from 'vue'
 import { registerPlugins } from '@/plugins'
 import vuetify from './plugins/vuetify'
 
-import VINPAC from '@vinz/vinpac'
-import '@vinz/vinpac/dist/style.css'
+import VINPAC from '@elvinperdana_vinz/vinpac'
+import '@elvinperdana_vinz/vinpac/dist/style.css'
 
 const app = createApp(App)
 
