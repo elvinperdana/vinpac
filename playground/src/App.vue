@@ -1,4 +1,5 @@
 <script setup>
+import { vinUtil } from '@elvinperdana_vinz/vinpac'
 
 const viewList = () => {
   return[
@@ -19,7 +20,6 @@ const viewList = () => {
     },
   ]
 }
-
 </script>
 
 <template>
@@ -28,6 +28,9 @@ const viewList = () => {
             <v-row align="center" justify="center" dense>
                 <v-col>
                     <VinzViewList1Column :list="viewList()"/>
+                </v-col>
+                <v-col>
+                  {{ vinUtil.thousandFormatter(15000) }}
                 </v-col>
             </v-row>
         </v-container>

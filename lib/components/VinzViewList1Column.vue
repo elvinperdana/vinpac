@@ -1,6 +1,7 @@
 <script setup>
 import {ref, computed, onMounted, onUnmounted, toRaw} from 'vue';
 import { defineProps } from 'vue';
+import { formatDate, thousandFormatter } from '../utils/index.js'
 
 // 👉 - Props
 const props = defineProps({
@@ -28,19 +29,6 @@ const listData = computed(() => {
 
   return data
 })
-
-const formatDate = (value, formatting = { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' }) => {
-  if (!value)
-    return value
-
-  return new Intl.DateTimeFormat('id-ID', formatting).format(new Date(value))
-}
-
-const thousandFormatter = num => {
-  const number = parseInt(num)
-
-  return isNaN(number) ? "INVALID NUMBER" : number.toLocaleString()
-}
 
 // 👉 - Data
 onMounted(() => {
